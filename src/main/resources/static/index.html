@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello World</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+	<style>
+        body {
+            background-color: #EEEEEE;
+        }
+
+        .container {
+            padding-top: 10%;
+        }
+
+        .container h1, .container h4 {
+            text-align: center;
+        }
+
+        .form-div {
+            width: 60%;
+            margin: 2em auto auto;
+        }
+        
+        #data {
+	        margin-top: 2em;
+	        border: 2px inset darkgray;
+        }
+	</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+	<div class="d-flex flex-grow-1">
+		<span class="w-100 d-lg-none d-block"><!-- hidden spacer to center brand on mobile --></span>
+		<a class="navbar-brand" href="#">
+			Spring Security Demo Project
+		</a>
+	</div>
+	<div class="navbar-collapse flex-grow-1 text-right">
+		<ul class="navbar-nav ml-auto flex-nowrap">
+			<li class="nav-item">
+				<a class="nav-link" href="/logout">Logout</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+<div class="container">
+	<h1>Hello World</h1>
+	<h4>Login successful.</h4>
+	<hr>
+	<div class="form-div">
+		<h5>Create new entry</h5>
+		<form onsubmit="return saveNewEntry()">
+			<div class="form-group">
+				<label for="key">Key</label>
+				<input type="text" class="form-control" id="key">
+			</div>
+			<div class="form-group">
+				<label for="value">Value</label>
+				<input type="text" class="form-control" id="value">
+			</div>
+			<button type="submit" class="btn btn-primary">Save</button>
+		</form>
+	</div>
+	<hr>
+	<div class="form-div">
+		<button class="btn btn-primary" onclick="fetchEntries()">Fetch data</button>
+		<pre id="data">
+			
+		</pre>
+	</div>
+</div>
+<script>
+  function fetchEntries() {
+    fetch('/api/list', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+    }).then(response => {
+      response.json().then(data => document.getElementById('data').innerHTML = JSON.stringify(data, null, 2))
+    }).catch(function (res) {
+      console.error(res)
+    })
+  }
+  
+  function saveNewEntry() {
+    const entry = {
+      key: document.getElementById('key').value,
+      value: document.getElementById('value').value
+    };
+    
+    fetch('/api/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(entry),
+    }).then(value => {
+      insertRandomData();
+    }).catch(function (res) {
+      console.error(res)
+    })
+    return false;
+  }
+  
+  function insertRandomData() {
+    document.getElementById('key').value = (Math.random() + 1).toString(36).substring(2);
+    document.getElementById('value').value = (Math.random() + 1).toString(36).substring(2);
+  }
+  
+  insertRandomData();
+</script>
+</body>
+</html>
